@@ -1,0 +1,29 @@
+# Build our Docker container and R pkg on Travis
+
+env:
+  global:
+  - REPO=$DOCKER_USER/qtl2hotspots
+
+sudo: required
+
+warnings_are_errors: false
+
+language: generic
+
+services:
+  - docker
+
+
+deploy:
+  provider: script
+  script: bash docker_push
+  on:
+    branch: master
+
+
+
+before_install:
+    # create & run container using our dockerfile, i.e. compile pkg and render Rmd to html
+  - docker build -t fjboehm/tidyverse-qtl2:$TRAVIS_COMMIT .
+  - docker tag fjboehm/tidyverse-qtl2:$TRAVIS_COMMIT fjboehm/tidyverse-qtl2:travis-$TRAVIS_BUILD_NUMBER
+
